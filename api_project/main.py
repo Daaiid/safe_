@@ -1,11 +1,21 @@
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
+origins = ["*"]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+#TODO Adapt so we receive a body instead of query params
 @app.post("/ValidatePost/")
-async def validate_post(string: post_content):
+async def validate_post(content, hash):
 
-    #here comes the post_validator
+    #TODO implement validator
 
-    return item
+    return hash
