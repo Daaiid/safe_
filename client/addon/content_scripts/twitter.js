@@ -1,0 +1,1 @@
+console.log("safe_ extension loaded!");
