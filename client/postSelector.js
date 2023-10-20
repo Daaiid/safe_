@@ -4,5 +4,8 @@ export function getLoadedPostNodes() {
 }
 
 export function extractTweetText(tweetNode) {
-    return tweetNode.querySelector('div[data-testid="tweetText"] > span').innerHTML
+    // Tweet text often has multiple spans and anchors as children
+    // TODO: fix this selector, as it isn't perfect yet
+    const textNodes = tweetNode.querySelector('div[data-testid="tweetText"] span, div[data-testid="tweetText"] a')
+    return textNodes.map((node) => node.innerHTML).join()
 }
