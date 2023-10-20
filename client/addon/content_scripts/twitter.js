@@ -9,20 +9,14 @@ function getLoadedPostNodes() {
 }
 
 function extractTweetText(tweetNode) {
-    // Tweet text often has multiple spans and anchors as children
-    // TODO: fix this selector, as it isn't perfect yet
     // const textNodes = tweetNode.querySelectorAll('div[data-testid="tweetText"] span, div[data-testid="tweetText"] a')
     const spans = tweetNode.querySelectorAll('div[data-testid="tweetText"] span')
-
-    // console.log("spans");
-    // console.log(spans)
    
     const nodeArray = Array.from(spans)
 
     let spanText = nodeArray.map(span => span.innerText).join('');
 
     return spanText
-
 }
 
 function stringToHash(string) {
@@ -40,7 +34,6 @@ function stringToHash(string) {
 
 window.addEventListener("load", waitForTweets, false);
 
-
 function waitForTweets(evt) {
     var jsInitChecktimer = setInterval(checkForJS_Finish, 111);
 
@@ -56,8 +49,6 @@ function waitForTweets(evt) {
     }
 }
 
-
-
 function processTweets() {
     let postNodes = Array.from(getLoadedPostNodes())
 
@@ -66,7 +57,6 @@ function processTweets() {
     // p.map((node) => console.log(extractTweetText(node)))
     postNodes.map((node) => {
         let tweetText = extractTweetText(node);
-
 
         if(tweetText == "") {
             return;
@@ -84,7 +74,6 @@ function processTweets() {
 
             //TODO:
             //Change get parameter to POST body parameters
-
             fetch(`http://10.155.111.231:8000/ValidatePost/?content=${tweetText}&hash=${hash}`, {
                 method: 'POST',
                 headers: {
@@ -100,7 +89,5 @@ function processTweets() {
 
 
     });
-
-    // extractTweetText(p[0]);
 
 }
