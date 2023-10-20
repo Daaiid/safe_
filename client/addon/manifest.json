@@ -3,19 +3,21 @@
       "default_popup": "popup/popup.html"
    },
    "description": "A HSLU HackSTAIR project in the middle of October 2023.",
-   "host_permissions": [ "https://*.twitter.com/", "https://*.x.com/" ],
+   "host_permissions": [ "https://twitter.com/*", "https://x.com/*" ],
    "icons": {
-      "128": "icons/safe_128.png",
-      "16": "icons/safe_16.png",
-      "32": "icons/safe_32.png",
-      "48": "icons/safe_48.png"
+      "128": "icons/Jira128.png",
+      "16": "icons/Jira16.png",
+      "32": "icons/Jira32.png",
+      "48": "icons/Jira48.png"
    },
    "manifest_version": 3,
    "name": "safe_",
    "permissions": [ "tabs" ],
    "version": "0.0.0.1",
-   "web_accessible_resources": [ {
-      "matches": [ "\u003Call_urls>" ],
-      "resources": [ "images/*.jpeg" ]
-   } ]
+   "content_scripts": [
+      {
+         "matches": [ "https://twitter.com/*", "https://x.com/*" ],
+         "js": [ "content_scripts/twitter.js" ]
+      }
+   ]
 }
