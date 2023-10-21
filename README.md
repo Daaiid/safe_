@@ -6,11 +6,11 @@ A HSLU HackSTAIR project in the middle of October 2023.
 ## Goal
 Protecting [Twitter](https://twitter.com) users from polarizing, overly negative or hurtful content through sentiment analysis.
 
+# Usage
+
 ## Prerequisites
 - Compatible Browser: [Google Chrome](https://www.google.com/chrome/) or [Microsoft Edge](https://www.microsoft.com/en-us/edge/download)
 - Twitter account
-
-## Usage
 
 ### Variant 1: Hosted API
 _**recommended**, only inside HSLU network_
@@ -30,11 +30,10 @@ _designed for local testing_
 5. run `python -m uvicorn main:app --host 0.0.0.0 --port 8000`
 6. Make sure to allow TCP Port 8000 in your local firewall
 
-
 ## Install Browser Extension
 1. Clone this repository (if not done already)
 2. Configure your browser to allow insecure content for `twitter.com`
-See detailed Instructions for [Google Chrome]() and [Microsoft]()
+See detailed Instructions for [Google Chrome](#enable-insecure-content-in-google-chrome) and [Microsoft Edge](#enable-insecure-content-in-microsoft-edge)
 3. Manage Extensions - turn on developer mode
 4. Manage Extensions - "Load unpacked" and browse to `<Repo>/client/addon`
 
