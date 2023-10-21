@@ -1,10 +1,10 @@
 # safe_
-_safespace_
+Pronounced "_safespace_"
 
 A HSLU HackSTAIR project in the middle of October 2023.
 
 ## Goal
-Protecting [Twitter](https://twitter.com) users from polarizing, overly negative or hurtful content through sentiment analysis.
+Protecting [Twitter](https://twitter.com) users from polarizing, overly negative, or hurtful content through sentiment analysis.
 
 # Usage
 
