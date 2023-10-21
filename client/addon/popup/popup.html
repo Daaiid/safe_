@@ -34,10 +34,27 @@
         text-align: center;
       }
 
+      .settings {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #6b778c;
+      }
+
       #usage-hint{
         font-size: 20px;
         color: #6b778c;
         text-align: center;
+      }
+
+      #run-localhost-checkbox {
+        margin: 0;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        position: relative;
+        top: 5px;
+        margin-right: 5px;
       }
 
     </style>
@@ -48,7 +65,14 @@
 
     <p id="usage-hint">📖 Open Twitter to use safe_</p>
 
+    <!-- <div class="settings">
+      <input type="checkbox" id="run-localhost-checkbox" name="run-localhost">
+      <label for="run-localhost">Use API on localhost</label>  
+    </div> -->
+
+
     <p class="footer-note">A HSLU HackSTAIR project</p>
+  
 
     <script src="popup.js"></script>
   </body>
