@@ -27,3 +27,10 @@ async def validate_post(item: Item):
     score = post_validator.validate_post(item.content)
 
     return (score, item.hash)
+
+@app.post("/RewritePost/")
+async def validate_post(item: Item):
+
+    #implement real
+
+    return "Sample Text"
