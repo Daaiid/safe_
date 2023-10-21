@@ -1,23 +1,69 @@
 console.log("safe_ extension loaded!");
 
+// threshold for post polarity score to be considered offensive
+// 
+const POST_POLARITY_SCORE_THRESHOLD = 0;
 
+// dictionary of all collected tweets with hash as key and post object as value
+// post object contains the tweet text and the dom node
+// Example: posts[hash] = { domNode: node, tweetText: tweetText };
 let posts = {};
 
-function getLoadedPostNodes() {
+
+// CSS Selectors
+const SELECTOR_TWEET_ARTICLE = 'article[data-testid="tweet"]'
+
+const SELECTOR_TWEET_TEXT = 'div[data-testid="tweetText"]'
+const SELECTOR_TWEET_TEXT_SPANS = 'div[data-testid="tweetText"] span'
+
+
+// CSS classes
+const CSS_BLUR_TWEET = 'safe_blurredtweet'
+
+
+//
+// Functions to interact with Twitter
+//
+
+function getAllTweetNodes() {
     // Tweets can be found as article nodes with this specific attribute and value
-    return document.querySelectorAll('article[data-testid="tweet"]')
+    return document.querySelectorAll(SELECTOR_TWEET_ARTICLE)
 }
 
-function extractTweetText(tweetNode) {
+function getAllTweetNodeSpans(tweetNode) {
+    return tweetNode.querySelectorAll(SELECTOR_TWEET_TEXT_SPANS)
+}
+
+function getTweetText(tweetNode) {
     // const textNodes = tweetNode.querySelectorAll('div[data-testid="tweetText"] span, div[data-testid="tweetText"] a')
-    const spans = tweetNode.querySelectorAll('div[data-testid="tweetText"] span')
-   
+    const spans = getAllTweetNodeSpans(tweetNode)
+
     const nodeArray = Array.from(spans)
 
     let spanText = nodeArray.map(span => span.innerText).join('');
 
     return spanText
 }
+
+function updateTweetText(tweetNode, text) {
+    const spans = getAllTweetNodeSpans(tweetNode)
+
+    const nodeArray = Array.from(spans)
+    nodeArray.forEach(span => span.remove())
+
+
+    let nodeToInsertModifiedTweet = tweetNode.querySelector(SELECTOR_TWEET_TEXT)
+
+    let modifiedTweetSpan = document.createElement('span')
+    modifiedTweetSpan.innerHTML = text;
+
+    nodeToInsertModifiedTweet.appendChild(modifiedTweetSpan)
+}
+
+//
+// Helper functions
+//
+
 
 function stringToHash(string) {
     let hash = 0;
@@ -32,6 +78,10 @@ function stringToHash(string) {
     return hash;
 }
 
+//
+// Main
+//
+
 window.addEventListener("load", waitForTweets, false);
 
 function waitForTweets(evt) {
@@ -39,7 +89,7 @@ function waitForTweets(evt) {
     var jsInitChecktimer = setInterval(checkForJS_Finish, 111);
 
     function checkForJS_Finish() {
-        if (document.querySelector('article[data-testid="tweet"]')) {
+        if (document.querySelector(SELECTOR_TWEET_ARTICLE)) {
             console.log("found first tweet!");
             clearInterval(jsInitChecktimer);
 
@@ -49,22 +99,21 @@ function waitForTweets(evt) {
     }
 }
 
-function processPostScore(data){
-    let postScorePolarity = data[0][0];
-    let postScoreObjectivity = data[0][1];
-    let postHash = data[1]
-    
-    if(!postHash){
+function processPostScore(apiResponse) {
+    let postScorePolarity = apiResponse[0][0];
+    let postScoreObjectivity = apiResponse[0][1];
+    let postHash = apiResponse[1]
+
+    if (!postHash) {
         return;
     }
 
-    if(posts[postHash]){
+    if (posts[postHash]) {
         let post = posts[postHash];
 
-        if(postScorePolarity < 0){
-
+        if (postScorePolarity < POST_POLARITY_SCORE_THRESHOLD) {
             //blurr tweet
-            // post.domNode.classList.add("safe_blurredtweet");
+            // post.domNode.classList.add(CSS_BLUR_TWEET);
 
             // post.domNode.style.backgroundColor = "red";
 
@@ -72,64 +121,71 @@ function processPostScore(data){
             console.log("post polarity: " + postScorePolarity);
             console.log("post objectivity: " + postScoreObjectivity);
 
-            
-    
+
+            //Todo fetch modified tweet text from server and update the tweet
+            // updateTweetText(post.domNode, "This tweet has been flagged as potentially offensive. Click to view.");
+
+            // post.domNode.innerText = "Sample Text";
+
         }
-        else{
-            //post is safe, unblurr
-            post.domNode.classList.remove("safe_blurredtweet");
-            
+        else {
+            // post is safe, unblurr
+            post.domNode.classList.remove(CSS_BLUR_TWEET);
+
             // post.domNode.style.backgroundColor = "green";
         }
     }
 }
 
 function processTweets() {
-    let postNodes = Array.from(getLoadedPostNodes())
+    let tweetNodes = Array.from(getAllTweetNodes())
 
-    postNodes.map((node) => {
-        
-        let tweetText = extractTweetText(node);
+    tweetNodes.map((node) => {
 
-        if(tweetText == "") {
+        let tweetText = getTweetText(node);
+
+        // skip if tweet text is empty
+        if (tweetText == "") {
             return;
         }
 
         //hash tweet text
         let hash = stringToHash(tweetText);
 
-        if(!posts[hash]) {
-
-            node.classList.add("safe_blurredtweet");
-
-            posts[hash] = {domNode: node, tweetText: tweetText};
-            
-            // console.log(posts[hash]);
-            // console.log("new tweet (" + hash + "s): " + tweetText);
-            // console.log(node);
-
-            //TODO:
-            //Change get parameter to POST body parameters
-
-            let requestObject = {
-                content: tweetText,
-                hash: hash
-            }
-
-            fetch(`http://10.155.111.231:8000/ValidatePost/`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestObject)
-            }).then(response => {
-                response.json().then(data => {
-                    processPostScore(data);
-                });
-            });
+        // if tweet is already in posts dictionary, skip it
+        if(posts[hash]){
+            return;
         }
 
+        // blur the tweet as soon as it is loaded
+        node.classList.add(CSS_BLUR_TWEET);
+
+        // add tweet to posts dictionary
+        posts[hash] = { domNode: node, tweetText: tweetText };
+
+        // console.log(posts[hash]);
+        // console.log("new tweet (" + hash + "s): " + tweetText);
+        // console.log(node);
+
+        // send tweet text to api for analysis
+        let requestObject = {
+            content: tweetText,
+            hash: hash
+        }
+
+        fetch(`http://10.155.111.231:8000/ValidatePost/`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestObject)
+        }).then(response => {
+            response.json().then(data => {
+                // process the api response and update the tweet
+                processPostScore(data);
+            });
+        });
 
     });
 
