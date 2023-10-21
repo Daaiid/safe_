@@ -1,6 +1,6 @@
 import openai
-import json
-openai.api_key = open("key.txt", "r").read()
+import os
+openai.api_key = os.getenv("OPENAI_API_TOKEN")
 
 
 def rewrite_content(content):
