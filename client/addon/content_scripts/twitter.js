@@ -49,12 +49,45 @@ function waitForTweets(evt) {
     }
 }
 
+function processPostScore(data){
+    let postScorePolarity = data[0][0];
+    let postScoreObjectivity = data[0][1];
+    let postHash = data[1]
+    
+    if(!postHash){
+        return;
+    }
+
+    if(posts[postHash]){
+        let post = posts[postHash];
+
+        if(postScorePolarity < 0){
+
+            //blurr tweet
+            // post.domNode.classList.add("safe_blurredtweet");
+
+            // post.domNode.style.backgroundColor = "red";
+
+            console.log("post text: " + posts[postHash].tweetText);
+            console.log("post polarity: " + postScorePolarity);
+            console.log("post objectivity: " + postScoreObjectivity);
+
+            
+    
+        }
+        else{
+            //post is safe, unblurr
+            post.domNode.classList.remove("safe_blurredtweet");
+            
+            // post.domNode.style.backgroundColor = "green";
+        }
+    }
+}
+
 function processTweets() {
     let postNodes = Array.from(getLoadedPostNodes())
 
     postNodes.map((node) => {
-
-        // node.style.backgroundColor = "green";
         
         let tweetText = extractTweetText(node);
 
@@ -67,29 +100,34 @@ function processTweets() {
 
         if(!posts[hash]) {
 
-            //blurr tweet
             node.classList.add("safe_blurredtweet");
 
             posts[hash] = {domNode: node, tweetText: tweetText};
             
-            console.log(posts[hash]);
+            // console.log(posts[hash]);
             // console.log("new tweet (" + hash + "s): " + tweetText);
             // console.log(node);
 
             //TODO:
             //Change get parameter to POST body parameters
 
-            // fetch(`http://10.155.111.231:8000/ValidatePost/?content=${tweetText}&hash=${hash}`, {
-            //     method: 'POST',
-            //     headers: {
-            //         'Accept': 'application/json',
-            //         'Content-Type': 'application/json'
-            // }
-            // }).then(response => {
-            //     response.json().then(data => {
-            //         console.log(data);
-            //     });
-            // });
+            let requestObject = {
+                content: tweetText,
+                hash: hash
+            }
+
+            fetch(`http://10.155.111.231:8000/ValidatePost/`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestObject)
+            }).then(response => {
+                response.json().then(data => {
+                    processPostScore(data);
+                });
+            });
         }
 
 
