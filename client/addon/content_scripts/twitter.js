@@ -1,7 +1,10 @@
 console.log("safe_ extension loaded!");
 
-const SAFE__API_ENDPOINT_V1 = "http://10.155.111.231:8000/ValidatePost/"
-const SAFE__API_ENDPOINT_V2 = "http://10.155.111.231:8000/ValidatePost2/"
+const SAFE__API_HOST_NICOLA = "10.155.111.231:8000"
+const SAFE__API_HOST = SAFE__API_HOST_NICOLA
+
+const SAFE__API_ENDPOINT_V1 = `http://${SAFE__API_HOST}/ValidatePost/`
+const SAFE__API_ENDPOINT_V2 = `http://${SAFE__API_HOST}/ValidatePost2/`
 
 const SAFE__API_ENDPOINT = SAFE__API_ENDPOINT_V2;
 
@@ -121,7 +124,11 @@ function processPostScore(apiResponse) {
             postHash = apiResponse[1];
 
             postScorePolarity = apiResponse[0]['label'] === 'NEG' ? POST_POLARITY_SCORE_THRESHOLD -1 : 0;
-            console.log(apiResponse);
+            
+            console.log(apiResponse[0])
+            // console.log(apiResponse[0]['label'])
+            // console.log(apiResponse[0]['score'])
+            // console.log(postScorePolarity)
 
             // {'label': 'NEU', 'score': 0.9493444561958313}
             break;
