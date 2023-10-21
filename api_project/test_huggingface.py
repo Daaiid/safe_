@@ -12,7 +12,7 @@ load_dotenv()
 
 
 # Initialize the InferenceClient with the desired sentiment analysis model
-# model_name = "finiteautomata/bertweet-base-sentiment-analysis"
+model_name = "finiteautomata/bertweet-base-sentiment-analysis"
 # model_name = "Elytum/tiny-classification-fast-6"
 # model_name = "bardsai/twitter-emotion-pl-fast"
 
