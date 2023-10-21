@@ -35,13 +35,13 @@ function stringToHash(string) {
 window.addEventListener("load", waitForTweets, false);
 
 function waitForTweets(evt) {
+    console.log("waiting for tweets...");
     var jsInitChecktimer = setInterval(checkForJS_Finish, 111);
 
     function checkForJS_Finish() {
-        console.log("waiting for tweets...");
         if (document.querySelector('article[data-testid="tweet"]')) {
+            console.log("found first tweet!");
             clearInterval(jsInitChecktimer);
-
 
             document.addEventListener("scroll", processTweets);
             processTweets();
@@ -52,10 +52,10 @@ function waitForTweets(evt) {
 function processTweets() {
     let postNodes = Array.from(getLoadedPostNodes())
 
-    // let elem = p[0].querySelector('div[data-testid="tweetText"] span, div[data-testid="tweetText"] a')
-
-    // p.map((node) => console.log(extractTweetText(node)))
     postNodes.map((node) => {
+
+        // node.style.backgroundColor = "green";
+        
         let tweetText = extractTweetText(node);
 
         if(tweetText == "") {
@@ -66,6 +66,10 @@ function processTweets() {
         let hash = stringToHash(tweetText);
 
         if(!posts[hash]) {
+
+            //blurr tweet
+            node.classList.add("safe_blurredtweet");
+
             posts[hash] = {domNode: node, tweetText: tweetText};
             
             console.log(posts[hash]);
@@ -74,17 +78,18 @@ function processTweets() {
 
             //TODO:
             //Change get parameter to POST body parameters
-            fetch(`http://10.155.111.231:8000/ValidatePost/?content=${tweetText}&hash=${hash}`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-            }
-            }).then(response => {
-                response.json().then(data => {
-                    console.log(data);
-                });
-            });
+
+            // fetch(`http://10.155.111.231:8000/ValidatePost/?content=${tweetText}&hash=${hash}`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Accept': 'application/json',
+            //         'Content-Type': 'application/json'
+            // }
+            // }).then(response => {
+            //     response.json().then(data => {
+            //         console.log(data);
+            //     });
+            // });
         }
 
 
