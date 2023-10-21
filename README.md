@@ -40,7 +40,15 @@ _designed for local testing_
 2. Configure your browser to allow insecure content for `twitter.com`
 See detailed Instructions for [Google Chrome](#enable-insecure-content-in-google-chrome) and [Microsoft Edge](#enable-insecure-content-in-microsoft-edge)
 3. Manage Extensions - turn on developer mode
+
+![extensions](assets/extensions_edge.jpeg)
+![dev_mode](assets/devmode_edge.jpeg)
+
 4. Manage Extensions - "Load unpacked" and browse to `<Repo>/client/addon`
+
+![load](assets/load_extension_edge.jpeg)
+![success](assets/successfully_loaded_extension_edge.jpeg)
+
 
 ### Enable insecure content in Google Chrome
 1. Open Google Chrome Settings
