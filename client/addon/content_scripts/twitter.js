@@ -1,6 +1,7 @@
 console.log("safe_ extension loaded!");
 
 const SAFE__API_HOST_NICOLA = "10.155.111.231:8000"
+const SAFE__API_HOST_NICOLA_HOME = "10.155.228.64:8000"
 const SAFE__API_HOST = SAFE__API_HOST_NICOLA
 
 const SAFE__API_ENDPOINT_V1 = `http://${SAFE__API_HOST}/ValidatePost/`
