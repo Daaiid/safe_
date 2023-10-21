@@ -6,6 +6,10 @@ A HSLU HackSTAIR project in the middle of October 2023.
 ## Goal
 Protecting [Twitter](https://twitter.com) users from polarizing, overly negative, or hurtful content through sentiment analysis.
 
+## How it works
+
+![How it works](assets/howitworks.png)
+
 # Usage
 
 ## Prerequisites
@@ -27,15 +31,24 @@ _designed for local testing_
 2. Clone this repository
 3. Open the `api_project` subfolder in a command line
 4. run `pip install -r requirements.txt` to install dependencies
-5. run `python -m uvicorn main:app --host 0.0.0.0 --port 8000`
-6. Make sure to allow TCP Port 8000 in your local firewall
+5. Place .env file provided by the team in api_project folder
+6. run `python -m uvicorn main:app --host 0.0.0.0 --port 8000 --env-file .env`
+7. Make sure to allow TCP Port 8000 in your local firewall
 
 ## Install Browser Extension
 1. Clone this repository (if not done already)
 2. Configure your browser to allow insecure content for `twitter.com`
 See detailed Instructions for [Google Chrome](#enable-insecure-content-in-google-chrome) and [Microsoft Edge](#enable-insecure-content-in-microsoft-edge)
 3. Manage Extensions - turn on developer mode
+
+![extensions](assets/extensions_edge.jpeg)
+![dev_mode](assets/devmode_edge.jpeg)
+
 4. Manage Extensions - "Load unpacked" and browse to `<Repo>/client/addon`
+
+![load](assets/load_extension_edge.jpeg)
+![success](assets/successfully_loaded_extension_edge.jpeg)
+
 
 ### Enable insecure content in Google Chrome
 1. Open Google Chrome Settings
