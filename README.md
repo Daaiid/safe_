@@ -27,8 +27,9 @@ _designed for local testing_
 2. Clone this repository
 3. Open the `api_project` subfolder in a command line
 4. run `pip install -r requirements.txt` to install dependencies
-5. run `python -m uvicorn main:app --host 0.0.0.0 --port 8000`
-6. Make sure to allow TCP Port 8000 in your local firewall
+5. Place .env file provided by the team in api_project folder
+6. run ` -m uvicorn main:app --host 0.0.0.0 --port 8000 --env-file .env`
+7. Make sure to allow TCP Port 8000 in your local firewall
 
 ## Install Browser Extension
 1. Clone this repository (if not done already)
