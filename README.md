@@ -34,6 +34,10 @@ _designed for local testing_
 5. Place .env file provided by the team in api_project folder
 6. run `python -m uvicorn main:app --host 0.0.0.0 --port 8000 --env-file .env`
 7. Make sure to allow TCP Port 8000 in your local firewall
+8. Navigate to `<Repo>/client/addon/content_scripts` and change line 6 of `twitter.js` to `const SAFE__API_HOST = SAFE__API_HOST_LOCAL`
+9. [Install the Browser Extension](#install-browser-extension)
+10. Open Twitter in your browser & login.
+11. enjoy using Twitter with safe_
 
 ## Install Browser Extension
 1. Clone this repository (if not done already)
@@ -44,7 +48,8 @@ See detailed Instructions for [Google Chrome](#enable-insecure-content-in-google
 ![extensions](assets/extensions_edge.jpeg)
 ![dev_mode](assets/devmode_edge.jpeg)
 
-4. Manage Extensions - "Load unpacked" and browse to `<Repo>/client/addon`
+4. Manage Extensions - "Load unpacked" and browse to `<Repo>/client/addon` 
+(In case the extension is already loaded, remove it first)
 
 ![load](assets/load_extension_edge.jpeg)
 ![success](assets/successfully_loaded_extension_edge.jpeg)
