@@ -31,6 +31,7 @@ const SELECTOR_TWEET_TEXT_SPANS = 'div[data-testid="tweetText"] span'
 
 // CSS classes
 const CSS_BLUR_TWEET = 'safe_blurredtweet'
+const CSS_BLUR_CHANGE_INTENDED = 'safe_blurchangeintended'
 
 const TWEET_EDIT_PREFIX = "[sentiment normalized by safe_]: "
 
@@ -101,7 +102,8 @@ function blurAgain(mutations) {
     mutations.forEach((mut) => {
          const classes = mut.target.classList;
          if (mut.oldValue.includes(CSS_BLUR_TWEET) &&
-             !classes.contains(CSS_BLUR_TWEET)) {
+             !classes.contains(CSS_BLUR_TWEET) &&
+             !classes.contains(CSS_BLUR_CHANGE_INTENDED)) {
              classes.add(CSS_BLUR_TWEET);
          }
     })
@@ -123,6 +125,11 @@ function waitForTweets() {
     }
 }
 
+function removeBlur(node) {
+    node.classList.add(CSS_BLUR_CHANGE_INTENDED);
+    node.classList.remove(CSS_BLUR_TWEET);
+}
+
 function preventUnblur() {
     const config = {attributeOldValue: true, subtree: true, attributeFilter: ["class"]};
     // Selects a div that is inside a section and has a previous sibling that's a h1
@@ -131,7 +138,7 @@ function preventUnblur() {
     blurObserver.observe(timelineNode, config);
 }
 
-function processPostScore(apiResponse) {
+async function processPostScore(apiResponse) {
 
     let postHash = null;
     let postScorePolarity = null;
@@ -180,6 +187,8 @@ function processPostScore(apiResponse) {
                 content: posts[postHash].tweetText,
                 hash: postHash
             }
+
+            console.log("sent response to gpt3.5-turbo")
             fetch(SAFE__API_REWRITE_ENDPOINT_V1, {
                 method: 'POST',
                 headers: {
@@ -189,11 +198,12 @@ function processPostScore(apiResponse) {
                 body: JSON.stringify(requestObject)
             }).then(response => {
                 response.json().then(data => {
+                    console.log("got response from gpt3.5-turbo")
                     // process the api response and update the tweet
                     processPostUpdate(data);
                 });
             });
-            // 
+            console.log("after fetch, should happen immediately after fetch")
             
 
             // post.domNode.innerText = "Sample Text";
@@ -201,7 +211,7 @@ function processPostScore(apiResponse) {
         }
         else { // post is safe, so unblur
             blurObserver.disconnect();
-            post.domNode.classList.remove(CSS_BLUR_TWEET);
+            removeBlur(post.domNode);
             preventUnblur();
         }
     }
@@ -219,6 +229,8 @@ function processPostUpdate(apiResponse) {
         let post = posts[postHash];
 
         updateTweetText(post.domNode, postText);
+
+        removeBlur(post.domNode);
     }
 
 
@@ -265,7 +277,7 @@ function processTweets() {
             },
             body: JSON.stringify(requestObject)
         }).then(response => {
-            response.json().then(data => {
+            response.json().then(async data => {
                 // process the api response and update the tweet
                 processPostScore(data);
             });
