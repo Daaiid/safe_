@@ -1,5 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+import post_validator
+
 app = FastAPI()
 
 origins = ["*"]
@@ -12,10 +16,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#TODO Adapt so we receive a body instead of query params
+
+class Item(BaseModel):
+    content: str
+    hash: int
+    
 @app.post("/ValidatePost/")
-async def validate_post(content, hash):
+async def validate_post(item: Item):
 
-    #TODO implement validator
+    score = post_validator.validate_post(item.content)
 
-    return hash
+    return (score, item.hash)
+
+@app.post("/RewritePost/")
+async def validate_post(item: Item):
+
+    #implement real
+
+    return "Sample Text"
