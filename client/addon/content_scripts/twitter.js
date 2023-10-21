@@ -2,16 +2,19 @@ console.debug("safe_ extension loaded!");
 
 const SAFE__API_HOST_NICOLA = "10.155.111.231:8000"
 const SAFE__API_HOST_NICOLA_HOME = "10.155.228.64:8000"
-const SAFE__API_HOST = SAFE__API_HOST_NICOLA
+const SAFE__API_HOST = SAFE__API_HOST_NICOLA_HOME
 
 const SAFE__API_ENDPOINT_V1 = `http://${SAFE__API_HOST}/ValidatePost/`
 const SAFE__API_ENDPOINT_V2 = `http://${SAFE__API_HOST}/ValidatePost2/`
+
+const SAFE__API_REWRITE_ENDPOINT_V1 = `http://${SAFE__API_HOST}/RewritePost/`
 
 const SAFE__API_ENDPOINT = SAFE__API_ENDPOINT_V2;
 
 // threshold for post polarity score to be considered offensive
 // posts with lower scores will be blurred
-const POST_POLARITY_SCORE_THRESHOLD = 0;
+const POST_POLARITY_SCORE_THRESHOLD = 0.95;
+
 
 // dictionary of all collected tweets with hash as key and post object as value
 // post object contains the tweet text and the dom node
@@ -29,6 +32,7 @@ const SELECTOR_TWEET_TEXT_SPANS = 'div[data-testid="tweetText"] span'
 // CSS classes
 const CSS_BLUR_TWEET = 'safe_blurredtweet'
 
+const TWEET_EDIT_PREFIX = "[sentiment normalized by safe_]: "
 
 //
 // Functions to interact with Twitter
@@ -63,7 +67,7 @@ function updateTweetText(tweetNode, text) {
     let nodeToInsertModifiedTweet = tweetNode.querySelector(SELECTOR_TWEET_TEXT)
 
     let modifiedTweetSpan = document.createElement('span')
-    modifiedTweetSpan.innerHTML = text;
+    modifiedTweetSpan.innerHTML = TWEET_EDIT_PREFIX + text;
 
     nodeToInsertModifiedTweet.appendChild(modifiedTweetSpan)
 }
@@ -122,8 +126,9 @@ function processPostScore(apiResponse) {
         case SAFE__API_ENDPOINT_V2:
             postHash = apiResponse[1];
 
-            postScorePolarity = apiResponse[0]['label'] === 'NEG' ? POST_POLARITY_SCORE_THRESHOLD -1 : 0;
-            
+            // NEG score: lower score is less negative
+            postScorePolarity = apiResponse[0]['label'] === 'NEG' ? apiResponse[0]['score'] : 0;
+                       
             console.log(apiResponse[0])
             // console.log(apiResponse[0]['label'])
             // console.log(apiResponse[0]['score'])
@@ -143,14 +148,32 @@ function processPostScore(apiResponse) {
     if (posts[postHash]) {
         let post = posts[postHash];
 
-        if (postScorePolarity < POST_POLARITY_SCORE_THRESHOLD) {
+        if (postScorePolarity > POST_POLARITY_SCORE_THRESHOLD) {
 
             console.debug("post text: " + posts[postHash].tweetText);
             console.debug("post polarity: " + postScorePolarity);
             console.debug("post objectivity: " + postScoreObjectivity);
 
             //Todo fetch modified tweet text from server and update the tweet
-            // updateTweetText(post.domNode, "This tweet has been flagged as potentially offensive. Click to view.");
+            let requestObject = {
+                content: posts[postHash].tweetText,
+                hash: postHash
+            }
+            fetch(SAFE__API_REWRITE_ENDPOINT_V1, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestObject)
+            }).then(response => {
+                response.json().then(data => {
+                    // process the api response and update the tweet
+                    processPostUpdate(data);
+                });
+            });
+            // 
+            
 
             // post.domNode.innerText = "Sample Text";
 
@@ -160,6 +183,23 @@ function processPostScore(apiResponse) {
             post.domNode.classList.remove(CSS_BLUR_TWEET);
         }
     }
+}
+
+function processPostUpdate(apiResponse) {
+    postHash = apiResponse[1];
+    postText = apiResponse[0];
+
+    if (!postHash) {
+        return;
+    }
+
+    if (posts[postHash]) {
+        let post = posts[postHash];
+
+        updateTweetText(post.domNode, postText);
+    }
+
+
 }
 
 function processTweets() {
