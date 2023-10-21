@@ -46,8 +46,9 @@ See detailed Instructions for [Google Chrome](#enable-insecure-content-in-google
 
 ### Enable insecure content in Microsoft Edge
 1. Open Microsoft Edge Settings
-2. Scroll down to "Insecure content"
-3. Open "Insecure content" and add `twitter.com` under "Allow"
+2. Search for insecure (unsicher)
+3. Scroll down to "Insecure content" (unsicherer Inhalt)
+4. Open "Insecure content" and add `twitter.com` under "Allow"
 
 ## Team
 - Robin Matter
