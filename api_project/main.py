@@ -6,11 +6,14 @@ from dotenv import load_dotenv
 import os
 import post_validator
 import post_validator2
+from transformers import pipeline
 load_dotenv()
 hugging_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 app = FastAPI()
 model_name = "finiteautomata/bertweet-base-sentiment-analysis"
 client = InferenceClient(token=hugging_token ,model=model_name)
+
+sentiment_pipeline = pipeline("sentiment-analysis", model="finiteautomata/bertweet-base-sentiment-analysis")
 
 
 origins = ["*"]
@@ -39,7 +42,7 @@ async def validate_post(item: Item):
 @app.post("/ValidatePost2/")
 async def validate_post(item: Item):
 
-    score = post_validator2.validate_post(item.content, client)
+    score = post_validator2.validate_post(item.content, sentiment_pipeline)
 
     return score, item.hash
 
