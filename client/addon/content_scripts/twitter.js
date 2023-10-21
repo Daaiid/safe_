@@ -1,6 +1,7 @@
-console.log("safe_ extension loaded!");
+console.debug("safe_ extension loaded!");
 
 const SAFE__API_HOST_NICOLA = "10.155.111.231:8000"
+const SAFE__API_HOST_NICOLA_HOME = "10.155.228.64:8000"
 const SAFE__API_HOST = SAFE__API_HOST_NICOLA
 
 const SAFE__API_ENDPOINT_V1 = `http://${SAFE__API_HOST}/ValidatePost/`
@@ -9,7 +10,7 @@ const SAFE__API_ENDPOINT_V2 = `http://${SAFE__API_HOST}/ValidatePost2/`
 const SAFE__API_ENDPOINT = SAFE__API_ENDPOINT_V2;
 
 // threshold for post polarity score to be considered offensive
-// 
+// posts with lower scores will be blurred
 const POST_POLARITY_SCORE_THRESHOLD = 0;
 
 // dictionary of all collected tweets with hash as key and post object as value
@@ -43,7 +44,6 @@ function getAllTweetNodeSpans(tweetNode) {
 }
 
 function getTweetText(tweetNode) {
-    // const textNodes = tweetNode.querySelectorAll('div[data-testid="tweetText"] span, div[data-testid="tweetText"] a')
     const spans = getAllTweetNodeSpans(tweetNode)
 
     const nodeArray = Array.from(spans)
@@ -71,7 +71,6 @@ function updateTweetText(tweetNode, text) {
 //
 // Helper functions
 //
-
 
 function stringToHash(string) {
     let hash = 0;
@@ -145,15 +144,10 @@ function processPostScore(apiResponse) {
         let post = posts[postHash];
 
         if (postScorePolarity < POST_POLARITY_SCORE_THRESHOLD) {
-            //blurr tweet
-            // post.domNode.classList.add(CSS_BLUR_TWEET);
 
-            // post.domNode.style.backgroundColor = "red";
-
-            console.log("post text: " + posts[postHash].tweetText);
-            console.log("post polarity: " + postScorePolarity);
-            console.log("post objectivity: " + postScoreObjectivity);
-
+            console.debug("post text: " + posts[postHash].tweetText);
+            console.debug("post polarity: " + postScorePolarity);
+            console.debug("post objectivity: " + postScoreObjectivity);
 
             //Todo fetch modified tweet text from server and update the tweet
             // updateTweetText(post.domNode, "This tweet has been flagged as potentially offensive. Click to view.");
@@ -162,10 +156,8 @@ function processPostScore(apiResponse) {
 
         }
         else {
-            // post is safe, unblurr
+            // post is safe, unblur
             post.domNode.classList.remove(CSS_BLUR_TWEET);
-
-            // post.domNode.style.backgroundColor = "green";
         }
     }
 }
@@ -196,9 +188,6 @@ function processTweets() {
         // add tweet to posts dictionary
         posts[hash] = { domNode: node, tweetText: tweetText };
 
-        // console.log(posts[hash]);
-        // console.log("new tweet (" + hash + "s): " + tweetText);
-        // console.log(node);
 
         // send tweet text to api for analysis
         let requestObject = {
