@@ -1,5 +1,10 @@
 console.log("safe_ extension loaded!");
 
+const SAFE__API_ENDPOINT_V1 = "http://10.155.111.231:8000/ValidatePost/"
+const SAFE__API_ENDPOINT_V2 = "http://10.155.111.231:8000/ValidatePost2/"
+
+const SAFE__API_ENDPOINT = SAFE__API_ENDPOINT_V2;
+
 // threshold for post polarity score to be considered offensive
 // 
 const POST_POLARITY_SCORE_THRESHOLD = 0;
@@ -100,9 +105,30 @@ function waitForTweets(evt) {
 }
 
 function processPostScore(apiResponse) {
-    let postScorePolarity = apiResponse[0][0];
-    let postScoreObjectivity = apiResponse[0][1];
-    let postHash = apiResponse[1]
+
+    let postHash = null;
+    let postScorePolarity = null;
+    let postScoreObjectivity = null;
+
+    switch (SAFE__API_ENDPOINT) {
+        case SAFE__API_ENDPOINT_V1:
+            postScorePolarity = apiResponse[0][0];
+            postScoreObjectivity = apiResponse[0][1];
+            postHash = apiResponse[1];
+        
+            break;
+        case SAFE__API_ENDPOINT_V2:
+            postHash = apiResponse[1];
+
+            postScorePolarity = apiResponse[0]['label'] === 'NEG' ? POST_POLARITY_SCORE_THRESHOLD -1 : 0;
+            console.log(apiResponse);
+
+            // {'label': 'NEU', 'score': 0.9493444561958313}
+            break;
+    
+        default:
+            break;
+    }
 
     if (!postHash) {
         return;
@@ -173,7 +199,7 @@ function processTweets() {
             hash: hash
         }
 
-        fetch(`http://10.155.111.231:8000/ValidatePost/`, {
+        fetch(SAFE__API_ENDPOINT, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
