@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
 import os
+
+import content_rewriter
 import post_validator
 import post_validator2
 from transformers import pipeline
@@ -49,6 +51,6 @@ async def validate_post(item: Item):
 @app.post("/RewritePost/")
 async def validate_post(item: Item):
 
-    #implement real
+    new_content = content_rewriter.rewrite_content(item.content)
 
-    return "Sample Text"
+    return new_content, item.hash

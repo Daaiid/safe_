@@ -11,6 +11,3 @@ def rewrite_content(content):
       ]
     )
     return completition.choices[0].message.content
-
-
-print(rewrite_content("They just happened to find 50,000 ballots late last night. The USA is embarrassed by fools. Our Election Process is worse than that of third world countries!"))
