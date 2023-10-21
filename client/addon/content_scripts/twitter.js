@@ -95,7 +95,19 @@ function stringToHash(string) {
 
 window.addEventListener("load", waitForTweets, false);
 
-function waitForTweets(evt) {
+const blurObserver = new MutationObserver(blurAgain) 
+
+function blurAgain(mutations) {
+    mutations.forEach((mut) => {
+         const classes = mut.target.classList;
+         if (mut.oldValue.includes(CSS_BLUR_TWEET) &&
+             !classes.contains(CSS_BLUR_TWEET)) {
+             classes.add(CSS_BLUR_TWEET);
+         }
+    })
+ }
+
+function waitForTweets() {
     console.log("waiting for tweets...");
     var jsInitChecktimer = setInterval(checkForJS_Finish, 111);
 
@@ -105,9 +117,18 @@ function waitForTweets(evt) {
             clearInterval(jsInitChecktimer);
 
             document.addEventListener("scroll", processTweets);
+            preventUnblur();
             processTweets();
         }
     }
+}
+
+function preventUnblur() {
+    const config = {attributeOldValue: true, subtree: true, attributeFilter: ["class"]};
+    // Selects a div that is inside a section and has a previous sibling that's a h1
+    const timelineNode = document.querySelector('section > h1 + div');
+
+    blurObserver.observe(timelineNode, config);
 }
 
 function processPostScore(apiResponse) {
@@ -178,9 +199,10 @@ function processPostScore(apiResponse) {
             // post.domNode.innerText = "Sample Text";
 
         }
-        else {
-            // post is safe, unblur
+        else { // post is safe, so unblur
+            blurObserver.disconnect();
             post.domNode.classList.remove(CSS_BLUR_TWEET);
+            preventUnblur();
         }
     }
 }
